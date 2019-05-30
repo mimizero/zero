@@ -1,0 +1,121 @@
+html >
+<！ - https://gist.github.com/Gugic/cfc008599fa9a82eeba4127648009132#gistcomment-2237466 - >
+＜頭＞
+	< title > DialogFlow APIの例</ title >
+	< meta  http-equiv = "コンテンツタイプ" コンテンツ = "テキスト/ html;文字セット= utf-8 " />
+	< script  src = " https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js " > </ script >
+	< script  type = " text / javascript " >
+		var accessToken = " b39c58c04a1d43ce949dce99087061ef”
+		var baseUrl =  " https://api.dialogflow.com/v1/ " ;
+		$（文書）ready（function（）{
+			$（" #botInput "）キー押下（機能（イベント）{
+				もし（イベント。== 13）{  
+					イベント。preventDefault（）;
+					send（）;
+					これ。値 =  ' ' ;
+				}
+			;））;
+			$（" #botRec "）クリック（機能（イベント）{
+				switchRecognition（）;
+			;））;
+		;））;
+		VAR認識
+		関数 startRecognition（）{
+			認識=  新しい webkitSpeechRecognition（）;
+			認識。onstart  =  function（event）{
+				updateRec（）;
+			;
+			認識。onresult  =  function（event）{
+				var text =  " " ;
+				用（VAR I =  イベント。resultIndex ; I <  イベント。結果。長さ ; ++ i）が{
+					テキスト+ =  イベント。結果 [i] [ 0 ] 転写物 ;
+				}
+				setInput（テキスト）;
+				stopRecognition（）;
+			;
+			認識。onend  =  function（）{
+				stopRecognition（）;
+			;
+			認識。lang  =  " en-US " ;
+			認識。start（）;
+		}
+		function  stopRecognition（）{
+			if（認識）{
+				認識。stop（）;
+				認識=  null。
+			}
+			updateRec（）;
+		}
+		関数 switchRecognition（）{
+			if（認識）{
+				stopRecognition（）;
+			} 他 {
+				startRecognition（）;
+			}
+		}
+		関数 setInput（テキスト）{
+			$（" #botInput "）val（テキスト）;
+			send（）;
+		}
+		関数 updateRec（）{
+			$（" #botRec "）テキスト（認識？ "停止" ： "会話"）;
+		}
+		関数 send（）{
+			var text =  $（" #botInput "）val（）;
+			会話。push（' <span class = "botReplyUser"> <span class = "botIdUser">私：</span> <span class = "botMsgUser"> '  + text +  ' </span> </span> '）; // div
+			$。ajax（{
+				タイプ： " POST "、
+				url ： baseUrl +  " query？v = 20150910 "、
+				contentType ： " application / json; charset = utf-8 "、
+				dataType ： " json "、
+				ヘッダ： {
+					"認可"： "ベアラ"  +アクセストークン
+				、
+				データ： JSON。stringify（{query ： text、lang ： " en "、sessionId ： " somerandomthing " }）、
+				成功： 機能（データ）{
+					VaRの respText =  データ。結果です。充実した スピーチ。
+					コンソール。log（" Respuesta："  + respText）;
+					setResponse（respText）;
+				、
+				エラー： function（）{
+					setResponse（" Internal Server Error "）;
+				}
+			;））;
+		}
+		関数 setResponse（val）{
+			会話。push（' <span class = "botReplyBot"> <span class = "botIdBot"> sAmI：</span> <span class = "botMsgBot"> '  + val +  ' </span> </span> '）; // div
+			$（" #response "）HTML（会話。参加（" "））; // div
+			$（"＃response-container "）scrollTop（$（" #response "）。height（））;
+			$（" #response .botReplyUser "）removeClass（" botReplyUserCurrent "）;
+			$（" #response .botReplyUser "）last（）addClass（" botReplyUserCurrent "）;
+			$（" #response .botReplyBot "）。removeClass（" botReplyBotCurrent "）;
+			$（" #response .botReplyBot "）。last（）addClass（" botReplyBotCurrent "）;
+		}
+		var conversation = [];
+	</ script >
+	< style  type = " text / css " >
+		.bot { 幅：340 ピクセル。身長：340 ピクセル。パディング：5 ピクセル。ボーダー半径：5 ピクセル。ボーダー：1 ピクセル ソリッド #eee。背景：#fff ; オーバーフロー：非表示。
+		.bot  ＃response-container { width：calc（100 ％  +  50 px）; 身長：280 ピクセル。overflow-x：隠されています。overflow-y：auto ;}
+		.bot  #response { width：340 px ;}
+		.bot  .botReplyUser { display：block ; 幅：計算値（100 ％  -  10 ピクセル）。パディング：5 ピクセル。ボーダー半径：5 ピクセル。背景：#eee ; カラー：＃888。マージンボトム：5 px ;}
+		.bot  .botReplyBot { display：block ; 幅：計算値（100 ％  -  12 ピクセル）。パディング：5 ピクセル。ボーダー半径：5 ピクセル。ボーダー：1 ピクセル ソリッド #eee。背景：#fff ; カラー：＃888。マージンボトム：5 px ;}
+		.bot  .botReplyUserCurrent { 色：＃555 ; 背景：#ddd ;}
+		.bot  .botReplyBotCurrent { 色：＃555 ;}
+		.bot  .botIdUser { display：none ; }
+		.bot  .botIdBot { display：none ; }
+		.bot  .botMsgUser { display：inline-block ; }
+		.bot  .botMsgBot { display：inline-block ; }
+		.bot  #botInput { display：inline-block ; 幅：290 ピクセル。高さ：40 ピクセル。パディング：5 ピクセル。ボーダー半径：5 ピクセル。ボーダー：1 ピクセル ソリッド #eee。行の高さ：30 ピクセル。右マージン：10 ピクセル ;}
+		.bot  #botRec { display：inline-block ; 幅：40 ピクセル。高さ：40 ピクセル。ボーダー半径：5 ピクセル。ボーダー：1 ピクセル ソリッド #eee。背景：#fff ;}
+	</ style >
+</ head >
+＜ボディ＞
+	< div  class = " bot " >
+  		< div  id = " response-container " >
+  			< div  id = " response " > </ div >
+		</ div >
+ 		< BR />
+    	< input  id = " botInput "  type = " text " プレースホルダ = "こんにちは、どうすれば手助けができますか？"  autocomplete = " off " /> < button  id = " botRec " >会話</ button >
+	</ div >
+</ body >
+</ html >
